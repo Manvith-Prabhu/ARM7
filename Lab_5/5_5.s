@@ -1,0 +1,20 @@
+	AREA reset, CODE, READONLY 
+	EXPORT Reset_Handler
+Reset_Handler 
+Start
+	 MOV R0, #-10 ;#40 FOR NO_SWAP CASE
+	 MOV R1, #20
+	 BL CMP_SWP
+STOP B STOP
+
+CMP_SWP
+	CMP R0, R1
+	BGE NO_SWAP
+	EOR R0, R0, R1
+	EOR R1, R0, R1
+	EOR R0, R0, R1
+	BX LR
+
+NO_SWAP
+	BX LR
+	END

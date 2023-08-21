@@ -1,0 +1,54 @@
+	AREA SAMPLE,CODE,READONLY
+	EXPORT RESET_HANDLER
+RESET_HANDLER
+M1		RN R2 ; Multiplicand
+M2		RN R3 ; Multiplier
+PH		RN R4 ; MSB side of Product
+PL		RN R5 ; LSB side of Product
+START
+		MOV R0, #0X40000000
+		LDR M1, [R0]
+		LDR M2, [R0, #4]!
+		
+		CMP M1, #0
+		MOVPL R12, #0
+		MOVMI R12,#1
+		
+		CMP M2, #0
+		BMI CHECK
+		BPL NEGATE
+		
+CHECK	CMP R12, #0
+		MOVEQ R12, #2
+		MOVNE R12, #3
+		
+NEGATE  CMP R12, #1
+		MVNEQ M1, M1
+		ADDEQ M1, M1, #1
+		
+		CMP R12, #2
+		MVNEQ M2, M2
+		ADDEQ M2, M2, #1
+		
+		CMP R12, #3
+		MVNEQ M1, M1
+		ADDEQ M1, M1, #1
+		MVNEQ M2, M2
+		ADDEQ M2, M2, #1
+		
+		UMULL PL, PH, M1, M2
+		
+		CMP R12, #0
+		BEQ STORE
+		CMP R12, #3
+		BEQ STORE
+		
+		MVN PH, PH
+		ADD PH, PH, #1
+		MVN PL, PL
+		ADD PL, PL, #1
+		
+STORE	STR PH, [R0, #4]!
+		STR PL, [R0, #4]
+STOP    B STOP
+		END

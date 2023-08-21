@@ -1,0 +1,16 @@
+	AREA SAMPLE,CODE,READONLY
+	EXPORT RESET_HANDLER
+RESET_HANDLER
+M1		RN R2 ; Multiplicand
+M2		RN R3 ; Multiplier
+PH		RN R4 ; MSB side of Product
+PL		RN R5 ; LSB side of Product
+START
+		MOV R0, #0X40000000
+		LDR M1, [R0]
+		LDR M2, [R0, #4]!
+		SMULL PL, PH, M1, M2
+		STR PH, [R0, #4]!
+		STR PL, [R0, #4]
+STOP    B STOP
+		END
